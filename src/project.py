@@ -79,8 +79,24 @@ def main():
     deal_card(deck, dealer_hand)
     deal_card(deck, dealer_hand)
 
+    print("Your Hand: ", player_hand, "Total: ", 
+          calculate_hand(player_hand))
+    print("Dealer Shows: ", dealer_hand[0])
+
+    # Player turn
+    player_turn(deck, player_hand)
+
+    # Dealer turn (if player does not bust)
+    if calculate_hand(player_hand) <= 21:
+        dealer_turn(deck, dealer_hand)
+
+    print("Final Hands: ")
     print("Player:", player_hand, "Total:", calculate_hand(player_hand))
     print("Dealer:", dealer_hand, "Total:", calculate_hand(dealer_hand))
+
+    # Winner decision
+    result = decide_winner(player_hand, dealer_hand)
+    print (result)
 
 if __name__ == "__main__":
     main()
