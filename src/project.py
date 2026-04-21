@@ -52,6 +52,22 @@ def dealer_turn(deck, dealer_hand):
     while calculate_hand(dealer_hand) < 17:
         deal_card(deck, dealer_hand)
 
+# Decides winner
+def decide_winner(player_hand, dealer_hand):
+    player_total = calculate_hand(player_hand)
+    dealer_total = calculate_hand(dealer_hand)
+
+    if player_total > 21:
+        return "Dealer Wins!"
+    elif dealer_total > 21:
+        return "Player Wins!"
+    elif player_total > dealer_total:
+        return "Player Wins!"
+    elif player_total < dealer_total:
+        return "Dealer Wins!"
+    else:
+        return "Tie!"
+    
 def main():
     deck = make_deck()
 
