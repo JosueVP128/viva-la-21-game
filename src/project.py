@@ -31,6 +31,27 @@ def calculate_hand(hand):
     
     return total
 
+# Player action
+def player_turn(deck, player_hand):
+    while True:
+        choice = input("HIT or STAND? ").lower()
+
+        if choice == "hit":
+            deal_card(deck, player_hand)
+            print("Your Hand: ", player_hand)
+            print("Total: ", calculate_hand(player_hand))
+
+            if calculate_hand(player_hand) > 21:
+                print("BUST!")
+                break
+        else:
+            break
+
+# Dealer action
+def dealer_turn(deck, dealer_hand):
+    while calculate_hand(dealer_hand) < 17:
+        deal_card(deck, dealer_hand)
+
 def main():
     deck = make_deck()
 
