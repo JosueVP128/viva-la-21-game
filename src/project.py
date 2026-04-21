@@ -30,3 +30,20 @@ def calculate_hand(hand):
         ace -= 1
     
     return total
+
+def main():
+    deck = make_deck()
+
+    player_hand = []
+    dealer_hand = []
+
+    deal_card(deck, player_hand)
+    deal_card(deck, player_hand)
+    deal_card(deck, dealer_hand)
+    deal_card(deck, dealer_hand)
+
+    print("Player:", player_hand, "Total:", calculate_hand(player_hand))
+    print("Dealer:", dealer_hand, "Total:", calculate_hand(dealer_hand))
+
+if __name__ == "__main__":
+    main()
