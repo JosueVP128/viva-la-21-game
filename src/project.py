@@ -87,6 +87,13 @@ def load_card_images():
     back_img = pygame.transform.scale(back_img, (70, 110))
 
     return card_images, back_img
+
+# Draws cards on screen
+def draw_hand(screen, hand, card_images, x, y):
+    for i, card in enumerate(hand):
+        value, _, suit = card
+        img = card_images[(value, suit)]
+        screen.blit(img, (x + i * 90, y))
     
 def main():
     pygame.init()
