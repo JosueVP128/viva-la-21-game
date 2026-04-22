@@ -4,9 +4,9 @@ import pygame
 # Makes deck of cards
 def make_deck():
     deck = []
-    suits = ["Hearts", "Diamonds", "Spades", "Clubs"]
+    suits = ["hearts", "diamonds", "spades", "clubs"]
     values = {"2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8,
-              "9": 9, "10": 10, "J": 10, "Q": 10, "K": 10, "A": 11}
+              "9": 9, "10": 10, "jack": 10, "queen": 10, "king": 10, "ace": 11}
     
     for suit in suits:
         for value in values:
@@ -73,7 +73,7 @@ def load_card_images():
     card_images = {}
 
     values = ["2", "3", "4", "5", "6", "7", "8", "9", "10",
-             "ace" "jack", "queen", "king"]
+             "ace", "jack", "queen", "king"]
     suits = ["hearts", "diamonds", "spades", "clubs"]
 
     for suit in suits:
@@ -104,6 +104,7 @@ def main():
 
     clock = pygame.time.Clock()
     running = True
+    card_images, back_image = load_card_images()
 
     deck = make_deck()
 
@@ -120,11 +121,11 @@ def main():
     print("Dealer Shows: ", dealer_hand[0])
 
     # Player turn
-    player_turn(deck, player_hand)
+    # player_turn(deck, player_hand)
 
     # Dealer turn (if player does not bust)
-    if calculate_hand(player_hand) <= 21:
-        dealer_turn(deck, dealer_hand)
+    # if calculate_hand(player_hand) <= 21:
+    #    dealer_turn(deck, dealer_hand)
 
     print("Final Hands: ")
     print("Player:", player_hand, "Total:", calculate_hand(player_hand))
@@ -140,6 +141,12 @@ def main():
                 running = False
         
         screen.fill((0, 128, 0))
+
+        # Draw player cards
+        draw_hand(screen, player_hand, card_images, 100, 400)
+
+        # Draw dealer cards
+        draw_hand(screen, dealer_hand, card_images, 100, 100)
 
         pygame.display.flip()
         clock.tick(60)
