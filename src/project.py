@@ -67,6 +67,26 @@ def decide_winner(player_hand, dealer_hand):
         return "Dealer Wins!"
     else:
         return "Tie!"
+
+# Loads card images into PyGame
+def load_card_images():
+    card_images = {}
+
+    values = ["2", "3", "4", "5", "6", "7", "8", "9", "10",
+             "ace" "jack", "queen", "king"]
+    suits = ["hearts", "diamonds", "spades", "clubs"]
+
+    for suit in suits:
+        for value in values:
+            filename = f"assets/cards/{value}_of_{suit}.png"
+            img = pygame.image.load(filename)
+            img = pygame.transform.scale(img, (70, 110))
+            card_images[(value, suit.capitalize())] = img
+    
+    back_img = pygame.image.load("assets/cards/back_of_card.png")
+    back_img = pygame.transform.scale(back_img, (70, 110))
+
+    return card_images, back_img
     
 def main():
     pygame.init()
