@@ -69,6 +69,15 @@ def decide_winner(player_hand, dealer_hand):
         return "Tie!"
     
 def main():
+    pygame.init()
+
+    WIDTH, HEIGHT = 800, 600
+    screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    pygame.display.set_caption("Viva la 21")
+
+    clock = pygame.time.Clock()
+    running = True
+
     deck = make_deck()
 
     player_hand = []
@@ -97,6 +106,18 @@ def main():
     # Winner decision
     result = decide_winner(player_hand, dealer_hand)
     print (result)
+
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+        
+        screen.fill((0, 128, 0))
+
+        pygame.display.flip()
+        clock.tick(60)
+
+    pygame.quit()
 
 if __name__ == "__main__":
     main()
