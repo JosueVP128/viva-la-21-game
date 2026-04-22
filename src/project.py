@@ -81,7 +81,7 @@ def load_card_images():
             filename = f"assets/cards/{value}_of_{suit}.png"
             img = pygame.image.load(filename)
             img = pygame.transform.scale(img, (70, 110))
-            card_images[(value, suit.capitalize())] = img
+            card_images[(value, suit)] = img
     
     back_img = pygame.image.load("assets/cards/back_of_card.png")
     back_img = pygame.transform.scale(back_img, (70, 110))
@@ -92,7 +92,8 @@ def load_card_images():
 def draw_hand(screen, hand, card_images, x, y):
     for i, card in enumerate(hand):
         value, _, suit = card
-        img = card_images[(value, suit)]
+        key = (value, suit)
+        img = card_images[key]
         screen.blit(img, (x + i * 90, y))
     
 def main():
