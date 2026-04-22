@@ -23,7 +23,7 @@ def deal_card(deck, hand):
 # Hand value calculating
 def calculate_hand(hand):
     total = sum(card[1] for card in hand)
-    ace = sum(1 for card in hand if card[0] == "A")
+    ace = sum(1 for card in hand if card[0] == "ace")
 
     while total > 21 and ace:
         total -= 10
@@ -95,6 +95,19 @@ def draw_hand(screen, hand, card_images, x, y):
         key = (value, suit)
         img = card_images[key]
         screen.blit(img, (x + i * 90, y))
+
+# Draws button on screen (for now)
+def draw_button(screen, text, x, y, width, height):
+    font = pygame.font.SysFont(None, 36)
+    rect = pygame.Rect(x, y, width, height)
+
+    pygame.draw.rect(screen, (200, 200, 200), rect)
+    pygame.draw.rect(screen, (0, 0, 0), rect, 2)
+
+    words = font.render(text, True, (0, 0, 0))
+    screen.blit(words, (x + 10, y + 10))
+
+    return rect
     
 def main():
     pygame.init()
