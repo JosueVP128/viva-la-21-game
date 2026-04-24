@@ -118,6 +118,8 @@ def main():
 
     clock = pygame.time.Clock()
     running = True
+    
+    # Loading card images
     card_images, back_image = load_card_images()
 
     deck = make_deck()
@@ -130,30 +132,34 @@ def main():
     deal_card(deck, dealer_hand)
     deal_card(deck, dealer_hand)
 
-    print("Your Hand: ", player_hand, "Total: ", 
-          calculate_hand(player_hand))
-    print("Dealer Shows: ", dealer_hand[0])
+    # Game state
+    player_turn_active = True
+    game_over = False
 
-    # Player turn
-    # player_turn(deck, player_hand)
-
-    # Dealer turn (if player does not bust)
-    # if calculate_hand(player_hand) <= 21:
-    #    dealer_turn(deck, dealer_hand)
-
-    print("Final Hands: ")
-    print("Player:", player_hand, "Total:", calculate_hand(player_hand))
-    print("Dealer:", dealer_hand, "Total:", calculate_hand(dealer_hand))
-
-    # Winner decision
-    result = decide_winner(player_hand, dealer_hand)
-    print (result)
+    font = pygame.font.SysFont(None, 30)
 
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
         
+        # Player interaction
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+
+                if hit_button.collidepoint(mouse_pos) and player_turn_active:
+                    deal_card(deck, player_hand)
+
+                    if calculate_hand(player_hand) > 21:
+                        player_turn_active = False
+                        game_over = True
+                
+                if stand_button.collidepoint(mouse_pos) and player_turn_active:
+                    player_turn_active = False
+                    dealer_turn(deck, dealer_hand)
+                    game_over = True
+        
+        # Draw background
         screen.fill((0, 128, 0))
 
         # Draw player cards
@@ -161,6 +167,28 @@ def main():
 
         # Draw dealer cards
         draw_hand(screen, dealer_hand, card_images, 100, 100)
+
+        # Draw buttons
+        hit_button = draw_button(screen, "HIT", 100, 500, 100, 50)
+        stand_button = draw_button(screen, "STAND", 250, 500, 120, 50)
+
+        # Draw scores
+        player_score = calculate_hand(player_hand)
+        dealer_score = calculate_hand(dealer_hand)
+
+        player_text = font.render(f"PLAYER: {player_score}", True, 
+                                  (255, 255, 255))
+        dealer_text = font.render(f"DEALER: {dealer_score}", True, 
+                                  (255, 255, 255))
+        
+        screen.blit(player_text, (100, 350))
+        screen.blit(dealer_text, (100, 50))
+
+        # Results if game over
+        if game_over:
+            result = decide_winner(player_hand, dealer_hand)
+            result_text = font.render(result, True, (255, 255, 255))
+            screen.blit(result_text, (300, 300))
 
         pygame.display.flip()
         clock.tick(60)
