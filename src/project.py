@@ -141,6 +141,11 @@ def main():
     game_over = False
     reveal_dealer = False
 
+    # Credit system
+    credits = 600
+    bet = 100
+    credits -= bet
+
     font = pygame.font.SysFont(None, 30)
 
     while running:
@@ -194,6 +199,11 @@ def main():
         player_text = font.render(f"PLAYER: {player_score}", True, 
                                   (255, 255, 255))
         
+        # Draw credits
+        credits_text = font.render(f"CREDITS: {credits}", True,
+                                   (255, 255, 255))
+        screen.blit(credits_text, (600, 20))
+        
         if reveal_dealer:
             dealer_score = calculate_hand(dealer_hand)
             dealer_text = font.render(f"DEALER: {dealer_score}", True, 
@@ -207,8 +217,28 @@ def main():
         # Results if game over
         if game_over:
             result = decide_winner(player_hand, dealer_hand)
+            if result == "Player Wins!":
+                credits += bet * 2
+            elif result == "Tie!":
+                credits += bet
             result_text = font.render(result, True, (255, 255, 255))
             screen.blit(result_text, (300, 300))
+            # Resets game
+            if credits >= bet:
+                deck = make_deck()
+                player_hand = []
+                dealer_hand = []
+                deal_card(deck, player_hand)
+                deal_card(deck, player_hand)
+                deal_card(deck, dealer_hand)
+                deal_card(deck, dealer_hand)
+                player_turn_active = True
+                game_over = False
+                reveal_dealer = False
+                credits -= bet
+            else:
+                print("GAME OVER: NO CREDITS")
+                running = False
 
         pygame.display.flip()
         clock.tick(60)
