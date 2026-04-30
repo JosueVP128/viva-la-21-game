@@ -88,13 +88,17 @@ def load_card_images():
 
     return card_images, back_img
 
-# Draws cards on screen
-def draw_hand(screen, hand, card_images, x, y):
+# Draws cards on screen and hides dealer card
+def draw_hand(screen, hand, card_images, x, y, hide_card=False, 
+              back_image=None):
     for i, card in enumerate(hand):
-        value, _, suit = card
-        key = (value, suit)
-        img = card_images[key]
-        screen.blit(img, (x + i * 90, y))
+        value, _, suit, = card
+
+        if i == 0 and hide_card:
+            screen.blit(back_image, (x + i * 90, y))
+        else:
+            img = card_images[(value, suit)]
+            screen.blit(img, (x + i * 90, y))
 
 # Draws button on screen (for now)
 def draw_button(screen, text, x, y, width, height):
@@ -135,6 +139,7 @@ def main():
     # Game state
     player_turn_active = True
     game_over = False
+    reveal_dealer = False
 
     font = pygame.font.SysFont(None, 30)
 
@@ -152,12 +157,22 @@ def main():
 
                     if calculate_hand(player_hand) > 21:
                         player_turn_active = False
+                        reveal_dealer = True
                         game_over = True
                 
                 if stand_button.collidepoint(mouse_pos) and player_turn_active:
                     player_turn_active = False
+                    reveal_dealer = True
                     dealer_turn(deck, dealer_hand)
                     game_over = True
+                
+                if reveal_dealer:
+                    dealer_score = calculate_hand(dealer_hand)
+                    dealer_text = font.render(f"DEALER: {dealer_score}", True, 
+                                              (255, 255, 255))
+                else:
+                    dealer_text = font.render(f"DEALER: ?", True,
+                                              (255, 255, 255))
         
         # Draw background
         screen.fill((0, 128, 0))
@@ -166,7 +181,9 @@ def main():
         draw_hand(screen, player_hand, card_images, 100, 400)
 
         # Draw dealer cards
-        draw_hand(screen, dealer_hand, card_images, 100, 100)
+        draw_hand(screen, dealer_hand, card_images, 100, 100,
+                  hide_card=not reveal_dealer,
+                  back_image=back_image)
 
         # Draw buttons
         hit_button = draw_button(screen, "HIT", 100, 500, 100, 50)
@@ -174,12 +191,15 @@ def main():
 
         # Draw scores
         player_score = calculate_hand(player_hand)
-        dealer_score = calculate_hand(dealer_hand)
-
         player_text = font.render(f"PLAYER: {player_score}", True, 
                                   (255, 255, 255))
-        dealer_text = font.render(f"DEALER: {dealer_score}", True, 
+        
+        if reveal_dealer:
+            dealer_score = calculate_hand(dealer_hand)
+            dealer_text = font.render(f"DEALER: {dealer_score}", True, 
                                   (255, 255, 255))
+        else:
+            dealer_text = font.render("DEALER: ?", True, (255, 255, 255))
         
         screen.blit(player_text, (100, 350))
         screen.blit(dealer_text, (100, 50))
