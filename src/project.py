@@ -186,8 +186,8 @@ def main():
                   back_image=back_image)
 
         # Draw buttons
-        hit_button = draw_button(screen, "HIT", 100, 500, 100, 50)
-        stand_button = draw_button(screen, "STAND", 250, 500, 120, 50)
+        hit_button = draw_button(screen, "HIT", 100, 525, 100, 50)
+        stand_button = draw_button(screen, "STAND", 250, 525, 120, 50)
 
         # Draw scores
         player_score = calculate_hand(player_hand)
