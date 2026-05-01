@@ -68,6 +68,16 @@ def decide_winner(player_hand, dealer_hand):
     else:
         return "Tie!"
 
+def reset_round():
+    deck = make_deck()
+    player_hand = []
+    dealer_hand = []
+    deal_card(deck, player_hand)
+    deal_card(deck, player_hand)
+    deal_card(deck, dealer_hand)
+    deal_card(deck, dealer_hand)
+    return deck, player_hand, dealer_hand
+
 # Loads card images into PyGame
 def load_card_images():
     card_images = {}
@@ -141,6 +151,8 @@ def main():
     game_over = False
     reveal_dealer = False
 
+    play_again_btn = None
+
     # Credit system
     credits = 600
     bet = 100
@@ -178,6 +190,20 @@ def main():
                 else:
                     dealer_text = font.render(f"DEALER: ?", True,
                                               (255, 255, 255))
+                    
+                if game_over and play_again_btn:
+                    if play_again_btn.collidepoint(mouse_pos):
+                        if credits >= bet:
+                            deck, player_hand, dealer_hand = reset_round()
+
+                            player_turn_active = True
+                            game_over = False
+                            reveal_dealer = False
+
+                            credits -= bet
+                        else:
+                            print("GAME OVER: NO CREDITS!")
+                            running = False
         
         # Draw background
         screen.fill((0, 128, 0))
@@ -193,6 +219,9 @@ def main():
         # Draw buttons
         hit_button = draw_button(screen, "HIT", 100, 525, 100, 50)
         stand_button = draw_button(screen, "STAND", 250, 525, 120, 50)
+        if game_over:
+            play_again_btn = draw_button(screen, "Play again?",
+                                         500, 500, 100, 50)
 
         # Draw scores
         player_score = calculate_hand(player_hand)
@@ -223,22 +252,6 @@ def main():
                 credits += bet
             result_text = font.render(result, True, (255, 255, 255))
             screen.blit(result_text, (300, 300))
-            # Resets game
-            if credits >= bet:
-                deck = make_deck()
-                player_hand = []
-                dealer_hand = []
-                deal_card(deck, player_hand)
-                deal_card(deck, player_hand)
-                deal_card(deck, dealer_hand)
-                deal_card(deck, dealer_hand)
-                player_turn_active = True
-                game_over = False
-                reveal_dealer = False
-                credits -= bet
-            else:
-                print("GAME OVER: NO CREDITS")
-                running = False
 
         pygame.display.flip()
         clock.tick(60)
