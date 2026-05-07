@@ -151,6 +151,7 @@ def main():
     game_over = False
     reveal_dealer = False
     round_paid = False
+    no_credits = False
 
     play_again_btn = None
 
@@ -204,8 +205,7 @@ def main():
 
                             credits -= bet
                         else:
-                            print("GAME OVER: NO CREDITS!")
-                            running = False
+                            no_credits = True
         
         # Draw background
         screen.fill((0, 128, 0))
@@ -256,6 +256,12 @@ def main():
                 round_paid = True
             result_text = font.render(result, True, (255, 255, 255))
             screen.blit(result_text, (300, 300))
+        
+        # Game over message
+        if no_credits:
+            game_over_text = font.render("GAME OVER", True,
+                                         (255, 0, 0))
+            screen.blit(game_over_text, (200, 250))
 
         pygame.display.flip()
         clock.tick(60)
