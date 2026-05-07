@@ -150,6 +150,7 @@ def main():
     player_turn_active = True
     game_over = False
     reveal_dealer = False
+    round_paid = False
 
     play_again_btn = None
 
@@ -199,6 +200,7 @@ def main():
                             player_turn_active = True
                             game_over = False
                             reveal_dealer = False
+                            round_paid = False
 
                             credits -= bet
                         else:
@@ -246,10 +248,12 @@ def main():
         # Results if game over
         if game_over:
             result = decide_winner(player_hand, dealer_hand)
-            if result == "Player Wins!":
-                credits += bet * 2
-            elif result == "Tie!":
-                credits += bet
+            if not round_paid:
+                if result == "Player Wins!":
+                    credits += bet * 2
+                elif result == "Tie!":
+                    credits += bet
+                round_paid = True
             result_text = font.render(result, True, (255, 255, 255))
             screen.blit(result_text, (300, 300))
 
