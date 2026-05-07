@@ -192,20 +192,16 @@ def main():
                 else:
                     dealer_text = font.render(f"DEALER: ?", True,
                                               (255, 255, 255))
-                    
-                if game_over and play_again_btn:
+                
+                if game_over and not no_credits and play_again_btn:
                     if play_again_btn.collidepoint(mouse_pos):
-                        if credits >= bet:
-                            deck, player_hand, dealer_hand = reset_round()
-
-                            player_turn_active = True
-                            game_over = False
-                            reveal_dealer = False
-                            round_paid = False
-
-                            credits -= bet
-                        else:
-                            no_credits = True
+                        deck, player_hand, dealer_hand = reset_round()
+                        player_turn_active = True
+                        game_over = False
+                        reveal_dealer = False
+                        round_paid = False
+                        no_credits = False
+                        credits -= bet
         
         # Draw background
         screen.fill((0, 128, 0))
@@ -221,7 +217,7 @@ def main():
         # Draw buttons
         hit_button = draw_button(screen, "HIT", 100, 525, 100, 50)
         stand_button = draw_button(screen, "STAND", 250, 525, 120, 50)
-        if game_over:
+        if game_over and not no_credits:
             play_again_btn = draw_button(screen, "Play again?",
                                          500, 500, 100, 50)
 
@@ -254,6 +250,8 @@ def main():
                 elif result == "Tie!":
                     credits += bet
                 round_paid = True
+                if credits < bet:
+                    no_credits = True
             result_text = font.render(result, True, (255, 255, 255))
             screen.blit(result_text, (300, 300))
         
