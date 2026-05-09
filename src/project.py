@@ -145,6 +145,11 @@ def main():
     no_credits = False
     betting_phase = True
 
+    dealing_cards = False
+    deal_timer = 0
+    deal_delay = 500
+    deal_queue = []
+
     play_again_btn = None
     hit_button = None
     stand_button = None
@@ -182,10 +187,11 @@ def main():
                         credits -= bet
                         deck, player_hand, dealer_hand = reset_round()
 
-                        deal_card(deck, player_hand)
-                        deal_card(deck, player_hand)
-                        deal_card(deck, dealer_hand)
-                        deal_card(deck, dealer_hand)
+                        deal_queue = [dealer_hand, dealer_hand,
+                                      player_hand, player_hand]
+                        
+                        dealing_cards = True
+                        deal_timer = pygame.time.get_ticks()
 
                         player_turn_active = True
                         game_over = False
@@ -193,7 +199,7 @@ def main():
                         round_paid = False
                         betting_phase = False
                 
-                if not betting_phase:
+                if not betting_phase and not dealing_cards:
                     if hit_button and hit_button.collidepoint(mouse_pos) and player_turn_active:
                         deal_card(deck, player_hand)
 
@@ -250,6 +256,17 @@ def main():
             betting_text = font.render("PLACE YOUR BET", True, 
                                        (255, 255, 255))
             screen.blit(betting_text, (300, 100))
+        
+        # Card dealing
+        if dealing_cards:
+            current_time = pygame.time.get_ticks()
+            if current_time - deal_timer > deal_delay:
+                if len(deal_queue) > 0:
+                    next_hand = deal_queue.pop()
+                    deal_card(deck, next_hand)
+                    deal_timer = current_time
+                else:
+                    dealing_cards = False
 
         # Draw player cards
         draw_hand(screen, player_hand, card_images, 100, 400)
@@ -291,7 +308,13 @@ def main():
             dealer_text = font.render(f"DEALER: {dealer_score}", True, 
                                   (255, 255, 255))
         else:
-            dealer_text = font.render("DEALER: ?", True, (255, 255, 255))
+            if len(dealer_hand) > 1:
+                vis_card_value = dealer_hand[1][1]
+                dealer_text = font.render(f"DEALER: {vis_card_value}", 
+                                          True, (255, 255, 255))
+            else:
+                dealer_text = font.render("DEALER: ?", True, 
+                                          (255, 255, 255))
         
         screen.blit(player_text, (100, 350))
         screen.blit(dealer_text, (100, 50))
