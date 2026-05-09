@@ -144,6 +144,7 @@ def main():
     round_paid = False
     no_credits = False
     betting_phase = True
+    blackjack = False
 
     dealing_cards = False
     deal_timer = 0
@@ -159,8 +160,8 @@ def main():
     start_button = None
 
     # Credit system
-    credits = 500
-    bet = 100
+    credits = 250
+    bet = 50
 
     font = pygame.font.SysFont(None, 30)
 
@@ -176,12 +177,12 @@ def main():
                 if betting_phase:
                     # Increase bet
                     if plus_button and plus_button.collidepoint(mouse_pos):
-                        if bet + 100 <= credits:
-                            bet += 100
+                        if bet + 50 <= credits:
+                            bet += 50
                     # Decrese bet
                     if minus_button and minus_button.collidepoint(mouse_pos):
-                        if bet > 100:
-                            bet -= 100
+                        if bet > 50:
+                            bet -= 50
                     # Start game
                     if start_button and start_button.collidepoint(mouse_pos):
                         credits -= bet
@@ -245,8 +246,9 @@ def main():
                         reveal_dealer = False
                         round_paid = False
                         no_credits = False
-                        bet = 100
+                        bet = 50
                         betting_phase = True
+                        blackjack = False
         
         # Draw background
         screen.fill((0, 128, 0))
@@ -267,6 +269,19 @@ def main():
                     deal_timer = current_time
                 else:
                     dealing_cards = False
+
+                    # Check for Blackjack
+                    player_blackjack = (calculate_hand(player_hand)
+                                        == 21 and len(player_hand) == 2)
+                    dealer_blackjack = (calculate_hand(player_hand)
+                                        == 21 and len(player_hand) == 2)
+                    if player_blackjack or dealer_blackjack:
+                        reveal_dealer = True
+                        player_turn_active = False
+                        game_over = True
+
+                        if player_blackjack and not dealer_blackjack:
+                            blackjack = True
 
         # Draw player cards
         draw_hand(screen, player_hand, card_images, 100, 400)
@@ -323,7 +338,9 @@ def main():
         if game_over:
             result = decide_winner(player_hand, dealer_hand)
             if not round_paid:
-                if result == "Player Wins!":
+                if blackjack:
+                    credits +- int(bet * 2.5)
+                elif result == "Player Wins!":
                     credits += bet * 2
                 elif result == "Tie!":
                     credits += bet
