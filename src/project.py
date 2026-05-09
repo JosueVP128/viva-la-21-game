@@ -236,7 +236,7 @@ def main():
         dd_button = draw_button(screen, "DOUBLE", 400, 525, 140, 50)
         if game_over and not no_credits:
             play_again_btn = draw_button(screen, "Play again?",
-                                         500, 500, 100, 50)
+                                         550, 525, 200, 50)
 
         # Draw scores
         player_score = calculate_hand(player_hand)
