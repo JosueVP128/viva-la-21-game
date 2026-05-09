@@ -72,10 +72,6 @@ def reset_round():
     deck = make_deck()
     player_hand = []
     dealer_hand = []
-    deal_card(deck, player_hand)
-    deal_card(deck, player_hand)
-    deal_card(deck, dealer_hand)
-    deal_card(deck, dealer_hand)
     return deck, player_hand, dealer_hand
 
 # Loads card images into PyGame
@@ -141,24 +137,25 @@ def main():
     player_hand = []
     dealer_hand = []
 
-    deal_card(deck, player_hand)
-    deal_card(deck, player_hand)
-    deal_card(deck, dealer_hand)
-    deal_card(deck, dealer_hand)
-
     # Game state
     player_turn_active = True
     game_over = False
     reveal_dealer = False
     round_paid = False
     no_credits = False
+    betting_phase = True
 
     play_again_btn = None
+    hit_button = None
+    stand_button = None
+    dd_button = None
+    plus_button = None
+    minus_button = None
+    start_button = None
 
     # Credit system
-    credits = 600
+    credits = 500
     bet = 100
-    credits -= bet
 
     font = pygame.font.SysFont(None, 30)
 
@@ -171,34 +168,60 @@ def main():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
 
-                if hit_button.collidepoint(mouse_pos) and player_turn_active:
-                    deal_card(deck, player_hand)
-
-                    if calculate_hand(player_hand) > 21:
-                        player_turn_active = False
-                        reveal_dealer = True
-                        game_over = True
-                
-                if stand_button.collidepoint(mouse_pos) and player_turn_active:
-                    player_turn_active = False
-                    reveal_dealer = True
-                    dealer_turn(deck, dealer_hand)
-                    game_over = True
-                
-                if dd_button.collidepoint(mouse_pos) and player_turn_active:
-                    if credits >= bet:
+                if betting_phase:
+                    # Increase bet
+                    if plus_button and plus_button.collidepoint(mouse_pos):
+                        if bet + 100 <= credits:
+                            bet += 100
+                    # Decrese bet
+                    if minus_button and minus_button.collidepoint(mouse_pos):
+                        if bet > 100:
+                            bet -= 100
+                    # Start game
+                    if start_button and start_button.collidepoint(mouse_pos):
                         credits -= bet
-                        bet *= 2
+                        deck, player_hand, dealer_hand = reset_round()
 
                         deal_card(deck, player_hand)
+                        deal_card(deck, player_hand)
+                        deal_card(deck, dealer_hand)
+                        deal_card(deck, dealer_hand)
 
+                        player_turn_active = True
+                        game_over = False
+                        reveal_dealer = False
+                        round_paid = False
+                        betting_phase = False
+                
+                if not betting_phase:
+                    if hit_button and hit_button.collidepoint(mouse_pos) and player_turn_active:
+                        deal_card(deck, player_hand)
+
+                        if calculate_hand(player_hand) > 21:
+                            player_turn_active = False
+                            reveal_dealer = True
+                            game_over = True
+                
+                    if stand_button and stand_button.collidepoint(mouse_pos) and player_turn_active:
                         player_turn_active = False
                         reveal_dealer = True
-
-                        if calculate_hand(player_hand) <= 21:
-                            dealer_turn(deck, dealer_hand)
-                        
+                        dealer_turn(deck, dealer_hand)
                         game_over = True
+                
+                    if dd_button and dd_button.collidepoint(mouse_pos) and player_turn_active:
+                        if credits >= bet:
+                            credits -= bet
+                            bet *= 2
+
+                            deal_card(deck, player_hand)
+
+                            player_turn_active = False
+                            reveal_dealer = True
+
+                            if calculate_hand(player_hand) <= 21:
+                                dealer_turn(deck, dealer_hand)
+                        
+                            game_over = True
                 
                 if reveal_dealer:
                     dealer_score = calculate_hand(dealer_hand)
@@ -217,10 +240,16 @@ def main():
                         round_paid = False
                         no_credits = False
                         bet = 100
-                        credits -= bet
+                        betting_phase = True
         
         # Draw background
         screen.fill((0, 128, 0))
+
+        # Draw bet phase text
+        if betting_phase:
+            betting_text = font.render("PLACE YOUR BET", True, 
+                                       (255, 255, 255))
+            screen.blit(betting_text, (300, 100))
 
         # Draw player cards
         draw_hand(screen, player_hand, card_images, 100, 400)
@@ -231,9 +260,15 @@ def main():
                   back_image=back_image)
 
         # Draw buttons
-        hit_button = draw_button(screen, "HIT", 100, 525, 100, 50)
-        stand_button = draw_button(screen, "STAND", 250, 525, 120, 50)
-        dd_button = draw_button(screen, "DOUBLE", 400, 525, 140, 50)
+        if not betting_phase:
+            hit_button = draw_button(screen, "HIT", 100, 525, 100, 50)
+            stand_button = draw_button(screen, "STAND", 250, 525, 120, 50)
+            dd_button = draw_button(screen, "DOUBLE", 400, 525, 140, 50)
+        if betting_phase:
+            plus_button = draw_button(screen, "+", 250, 250, 50, 50)
+            minus_button = draw_button(screen, "-", 100, 250, 50, 50)
+            start_button = draw_button(screen, "START!", 
+                                       400, 250, 140, 50)
         if game_over and not no_credits:
             play_again_btn = draw_button(screen, "Play again?",
                                          550, 525, 200, 50)
@@ -247,6 +282,9 @@ def main():
         credits_text = font.render(f"CREDITS: {credits}", True,
                                    (255, 255, 255))
         screen.blit(credits_text, (600, 20))
+        bet_text = font.render(f"BET: {bet}", True,
+                               (255, 255, 255))
+        screen.blit(bet_text, (600, 60))
         
         if reveal_dealer:
             dealer_score = calculate_hand(dealer_hand)
