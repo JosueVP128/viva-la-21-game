@@ -185,6 +185,21 @@ def main():
                     dealer_turn(deck, dealer_hand)
                     game_over = True
                 
+                if dd_button.collidepoint(mouse_pos) and player_turn_active:
+                    if credits >= bet:
+                        credits -= bet
+                        bet *= 2
+
+                        deal_card(deck, player_hand)
+
+                        player_turn_active = False
+                        reveal_dealer = True
+
+                        if calculate_hand(player_hand) <= 21:
+                            dealer_turn(deck, dealer_hand)
+                        
+                        game_over = True
+                
                 if reveal_dealer:
                     dealer_score = calculate_hand(dealer_hand)
                     dealer_text = font.render(f"DEALER: {dealer_score}", True, 
@@ -201,6 +216,7 @@ def main():
                         reveal_dealer = False
                         round_paid = False
                         no_credits = False
+                        bet = 100
                         credits -= bet
         
         # Draw background
@@ -217,6 +233,7 @@ def main():
         # Draw buttons
         hit_button = draw_button(screen, "HIT", 100, 525, 100, 50)
         stand_button = draw_button(screen, "STAND", 250, 525, 120, 50)
+        dd_button = draw_button(screen, "DOUBLE", 400, 525, 140, 50)
         if game_over and not no_credits:
             play_again_btn = draw_button(screen, "Play again?",
                                          500, 500, 100, 50)
