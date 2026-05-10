@@ -215,20 +215,23 @@ def main():
                         dealer_turn(deck, dealer_hand)
                         game_over = True
                 
-                    if dd_button and dd_button.collidepoint(mouse_pos) and player_turn_active:
-                        if credits >= bet:
-                            credits -= bet
-                            bet *= 2
+                    if (dd_button and dd_button.collidepoint(mouse_pos)
+                        and player_turn_active
+                        and len(player_hand) == 2
+                        ):
+                            if credits >= bet:
+                                credits -= bet
+                                bet *= 2
 
-                            deal_card(deck, player_hand)
+                                deal_card(deck, player_hand)
 
-                            player_turn_active = False
-                            reveal_dealer = True
+                                player_turn_active = False
+                                reveal_dealer = True
 
-                            if calculate_hand(player_hand) <= 21:
-                                dealer_turn(deck, dealer_hand)
+                                if calculate_hand(player_hand) <= 21:
+                                    dealer_turn(deck, dealer_hand)
                         
-                            game_over = True
+                                game_over = True
                 
                 if reveal_dealer:
                     dealer_score = calculate_hand(dealer_hand)
@@ -273,8 +276,8 @@ def main():
                     # Check for Blackjack
                     player_blackjack = (calculate_hand(player_hand)
                                         == 21 and len(player_hand) == 2)
-                    dealer_blackjack = (calculate_hand(player_hand)
-                                        == 21 and len(player_hand) == 2)
+                    dealer_blackjack = (calculate_hand(dealer_hand)
+                                        == 21 and len(dealer_hand) == 2)
                     if player_blackjack or dealer_blackjack:
                         reveal_dealer = True
                         player_turn_active = False
@@ -339,7 +342,7 @@ def main():
             result = decide_winner(player_hand, dealer_hand)
             if not round_paid:
                 if blackjack:
-                    credits +- int(bet * 2.5)
+                    credits += int(bet * 2.5)
                 elif result == "Player Wins!":
                     credits += bet * 2
                 elif result == "Tie!":
