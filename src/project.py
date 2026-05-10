@@ -56,8 +56,16 @@ def dealer_turn(deck, dealer_hand):
 def decide_winner(player_hand, dealer_hand):
     player_total = calculate_hand(player_hand)
     dealer_total = calculate_hand(dealer_hand)
+    player_blackjack = (player_total == 21 and len(player_hand) == 2)
+    dealer_blackjack = (dealer_total == 21 and len(dealer_hand) == 2)
 
-    if player_total > 21:
+    if player_blackjack and not dealer_blackjack:
+        return "Blackjack!"
+    elif dealer_blackjack and not player_blackjack:
+        return "Dealer Blackjack!"
+    elif player_blackjack and dealer_blackjack:
+        return "Push!"
+    elif player_total > 21:
         return "Dealer Wins!"
     elif dealer_total > 21:
         return "Player Wins!"
@@ -66,7 +74,7 @@ def decide_winner(player_hand, dealer_hand):
     elif player_total < dealer_total:
         return "Dealer Wins!"
     else:
-        return "Tie!"
+        return "Push!"
 
 def reset_round():
     deck = make_deck()
@@ -144,7 +152,6 @@ def main():
     round_paid = False
     no_credits = False
     betting_phase = True
-    blackjack = False
 
     dealing_cards = False
     deal_timer = 0
@@ -188,8 +195,8 @@ def main():
                         credits -= bet
                         deck, player_hand, dealer_hand = reset_round()
 
-                        deal_queue = [dealer_hand, dealer_hand,
-                                      player_hand, player_hand]
+                        deal_queue = [dealer_hand, player_hand,
+                                      dealer_hand, player_hand]
                         
                         dealing_cards = True
                         deal_timer = pygame.time.get_ticks()
@@ -251,7 +258,6 @@ def main():
                         no_credits = False
                         bet = 50
                         betting_phase = True
-                        blackjack = False
         
         # Draw background
         screen.fill((0, 128, 0))
@@ -276,15 +282,10 @@ def main():
                     # Check for Blackjack
                     player_blackjack = (calculate_hand(player_hand)
                                         == 21 and len(player_hand) == 2)
-                    dealer_blackjack = (calculate_hand(dealer_hand)
-                                        == 21 and len(dealer_hand) == 2)
-                    if player_blackjack or dealer_blackjack:
+                    if player_blackjack:
                         reveal_dealer = True
                         player_turn_active = False
                         game_over = True
-
-                        if player_blackjack and not dealer_blackjack:
-                            blackjack = True
 
         # Draw player cards
         draw_hand(screen, player_hand, card_images, 100, 400)
@@ -341,11 +342,11 @@ def main():
         if game_over:
             result = decide_winner(player_hand, dealer_hand)
             if not round_paid:
-                if blackjack:
+                if result == "Blackjack!":
                     credits += int(bet * 2.5)
                 elif result == "Player Wins!":
                     credits += bet * 2
-                elif result == "Tie!":
+                elif result == "Push!":
                     credits += bet
                 round_paid = True
                 if credits < bet:
