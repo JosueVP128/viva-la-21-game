@@ -186,6 +186,7 @@ def main():
     dealer_reaction = "neutral"
 
     play_again_btn = None
+    cash_out_btn = None
     hit_button = None
     stand_button = None
     dd_button = None
@@ -291,6 +292,12 @@ def main():
                         no_credits = False
                         bet = 50
                         betting_phase = True
+                        cash_out_btn = None
+                
+                if game_over and not no_credits and cash_out_btn:
+                    if cash_out_btn.collidepoint(mouse_pos):
+                        game_state = "results"
+                        
         # Title screen
         if game_state == "title":
             screen.blit(title_screen, (0, 0))
@@ -308,7 +315,7 @@ def main():
             screen.blit(results_text, (290, 430))
             thanks_text = font.render("THANKS FOR PLAYING!", 
                                      True, (255, 255, 255))
-            screen.blit(thanks_text, (260, 460))
+            screen.blit(thanks_text, (270, 460))
             pygame.display.flip()
             clock.tick(60)
             continue
@@ -362,6 +369,8 @@ def main():
         if game_over and not no_credits:
             play_again_btn = draw_button(screen, "Play again?",
                                          550, 525, 200, 50)
+            cash_out_btn = draw_button(screen, "Cash Out",
+                                       550, 460, 200, 50)
 
         # Draw scores
         player_score = calculate_hand(player_hand)
@@ -413,7 +422,7 @@ def main():
                     dealer_reaction = "push"
                     credits += bet
                 round_paid = True
-                if credits < bet:
+                if credits < 50:
                     no_credits = True
             result_text = font.render(result, True, (255, 255, 255))
             screen.blit(result_text, (300, 300))
