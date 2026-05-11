@@ -106,7 +106,7 @@ def load_card_images():
 def load_dealer_images():
     dealer_images = {}
     reactions = ["lose", "neutral", "win", "push", "blackjack", 
-                 "playerblackjack", "blink"]
+                 "playerblackjack"]
     
     for reaction in reactions:
         filename = f"assets/dealer_reactions/dealer_{reaction}.png"
