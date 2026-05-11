@@ -359,7 +359,7 @@ def main():
         screen.blit(dealer_text, (100, 50))
 
         # Draw dealer reactions
-        screen.blit(dealer_images[dealer_reaction], (550, 150))
+        screen.blit(dealer_images[dealer_reaction], (575, 1))
 
         # Results if game over
         if game_over:
