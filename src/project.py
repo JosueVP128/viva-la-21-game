@@ -102,6 +102,21 @@ def load_card_images():
 
     return card_images, back_img
 
+# Loads dealer reactions into PyGame
+def load_dealer_images():
+    dealer_images = {}
+    reactions = ["lose", "neutral", "win", "push", "blackjack", 
+                 "playerblackjack", "blink"]
+    
+    for reaction in reactions:
+        filename = f"assets/dealer_reactions/dealer_{reaction}.png"
+        img = pygame.image.load(filename)
+        img = pygame.transform.scale(img, (200, 300))
+
+        dealer_images[reaction] = img
+
+    return dealer_images
+
 # Draws cards on screen and hides dealer card
 def draw_hand(screen, hand, card_images, x, y, hide_card=False, 
               back_image=None):
@@ -137,8 +152,9 @@ def main():
     clock = pygame.time.Clock()
     running = True
     
-    # Loading card images
+    # Loading card and dealer images
     card_images, back_image = load_card_images()
+    dealer_images = load_dealer_images()
 
     deck = make_deck()
 
@@ -157,6 +173,8 @@ def main():
     deal_timer = 0
     deal_delay = 500
     deal_queue = []
+
+    dealer_reaction = "neutral"
 
     play_again_btn = None
     hit_button = None
@@ -194,6 +212,7 @@ def main():
                     if start_button and start_button.collidepoint(mouse_pos):
                         credits -= bet
                         deck, player_hand, dealer_hand = reset_round()
+                        dealer_reaction = "neutral"
 
                         deal_queue = [dealer_hand, player_hand,
                                       dealer_hand, player_hand]
@@ -251,6 +270,7 @@ def main():
                 if game_over and not no_credits and play_again_btn:
                     if play_again_btn.collidepoint(mouse_pos):
                         deck, player_hand, dealer_hand = reset_round()
+                        dealer_reaction = "neutral"
                         player_turn_active = True
                         game_over = False
                         reveal_dealer = False
@@ -338,15 +358,25 @@ def main():
         screen.blit(player_text, (100, 350))
         screen.blit(dealer_text, (100, 50))
 
+        # Draw dealer reactions
+        screen.blit(dealer_images[dealer_reaction], (550, 150))
+
         # Results if game over
         if game_over:
             result = decide_winner(player_hand, dealer_hand)
             if not round_paid:
                 if result == "Blackjack!":
+                    dealer_reaction = "playerblackjack"
                     credits += int(bet * 2.5)
                 elif result == "Player Wins!":
+                    dealer_reaction = "lose"
                     credits += bet * 2
+                elif result == "Dealer Wins!":
+                    dealer_reaction = "win"
+                elif result == "Dealer Blackjack!":
+                    dealer_reaction = "blackjack"
                 elif result == "Push!":
+                    dealer_reaction = "push"
                     credits += bet
                 round_paid = True
                 if credits < bet:
