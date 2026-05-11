@@ -48,9 +48,10 @@ def player_turn(deck, player_hand):
             break
 
 # Dealer action
-def dealer_turn(deck, dealer_hand):
+def dealer_turn(deck, dealer_hand, card_sound):
     while calculate_hand(dealer_hand) < 17:
         deal_card(deck, dealer_hand)
+        card_sound.play()
 
 # Decides winner
 def decide_winner(player_hand, dealer_hand):
@@ -159,6 +160,11 @@ def main():
     # Music
     pygame.mixer.init()
     play_music("assets/musicvl21/titlemusic.mp3")
+    win_sound = pygame.mixer.Sound("assets/sfxvl21/winsound.mp3")
+    lose_sound = pygame.mixer.Sound("assets/sfxvl21/losesound.mp3")
+    blackjack_sound = pygame.mixer.Sound("assets/sfxvl21/blackjacksound.mp3")
+    push_sound = pygame.mixer.Sound("assets/sfxvl21/pushsound.mp3")
+    card_sound = pygame.mixer.Sound("assets/sfxvl21/cardsound.mp3")
     
     # Loading card and dealer images
     card_images, back_image = load_card_images()
@@ -252,6 +258,7 @@ def main():
                 if not betting_phase and not dealing_cards:
                     if hit_button and hit_button.collidepoint(mouse_pos) and player_turn_active:
                         deal_card(deck, player_hand)
+                        card_sound.play()
 
                         if calculate_hand(player_hand) > 21:
                             player_turn_active = False
@@ -261,7 +268,7 @@ def main():
                     if stand_button and stand_button.collidepoint(mouse_pos) and player_turn_active:
                         player_turn_active = False
                         reveal_dealer = True
-                        dealer_turn(deck, dealer_hand)
+                        dealer_turn(deck, dealer_hand, card_sound)
                         game_over = True
                 
                     if (dd_button and dd_button.collidepoint(mouse_pos)
@@ -273,12 +280,13 @@ def main():
                                 bet *= 2
 
                                 deal_card(deck, player_hand)
+                                card_sound.play()
 
                                 player_turn_active = False
                                 reveal_dealer = True
 
                                 if calculate_hand(player_hand) <= 21:
-                                    dealer_turn(deck, dealer_hand)
+                                    dealer_turn(deck, dealer_hand, card_sound)
                         
                                 game_over = True
                 
@@ -346,6 +354,7 @@ def main():
                 if len(deal_queue) > 0:
                     next_hand = deal_queue.pop()
                     deal_card(deck, next_hand)
+                    card_sound.play()
                     deal_timer = current_time
                 else:
                     dealing_cards = False
@@ -421,16 +430,26 @@ def main():
                 if result == "Blackjack!":
                     dealer_reaction = "playerblackjack"
                     credits += int(bet * 2.5)
+                    blackjack_sound.play()
+
                 elif result == "Player Wins!":
                     dealer_reaction = "lose"
                     credits += bet * 2
+                    win_sound.play()
+
                 elif result == "Dealer Wins!":
                     dealer_reaction = "win"
+                    lose_sound.play()
+                    
                 elif result == "Dealer Blackjack!":
                     dealer_reaction = "blackjack"
+                    lose_sound.play()
+
                 elif result == "Push!":
                     dealer_reaction = "push"
                     credits += bet
+                    push_sound.play()
+
                 round_paid = True
                 if credits < 50:
                     no_credits = True
