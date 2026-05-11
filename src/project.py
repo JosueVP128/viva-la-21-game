@@ -132,11 +132,11 @@ def draw_hand(screen, hand, card_images, x, y, hide_card=False,
 
 # Draws button on screen
 def draw_button(screen, text, x, y, width, height):
-    font = pygame.font.SysFont(None, 36)
+    font = pygame.font.SysFont("constantia", 30)
     rect = pygame.Rect(x, y, width, height)
 
-    pygame.draw.rect(screen, (200, 200, 200), rect)
-    pygame.draw.rect(screen, (0, 0, 0), rect, 2)
+    pygame.draw.rect(screen, (212, 175, 55), rect, border_radius=12)
+    pygame.draw.rect(screen, (0, 0, 0), rect, 2, border_radius=12)
 
     words = font.render(text, True, (0, 0, 0))
     screen.blit(words, (x + 10, y + 10))
@@ -328,6 +328,11 @@ def main():
         # Results screen
         if game_state == "results":
             screen.blit(title_screen, (0, 0))
+            results_box = pygame.Rect(250, 410, 270, 100)
+            pygame.draw.rect(screen, (20, 20, 20),
+                 results_box, border_radius=12)
+            pygame.draw.rect(screen, (255, 255, 255),
+                 results_box, 2, border_radius=12)
             results_text = font.render(f"FINAL CREDITS: {credits}", 
                                      True, (255, 255, 255))
             screen.blit(results_text, (290, 430))
@@ -339,7 +344,7 @@ def main():
             continue
         
         # Draw background
-        screen.fill((0, 128, 0))
+        screen.fill((105, 2, 19))
 
         # Draw bet phase text
         if betting_phase:
@@ -378,7 +383,7 @@ def main():
         # Draw buttons
         if not betting_phase:
             hit_button = draw_button(screen, "HIT", 100, 525, 100, 50)
-            stand_button = draw_button(screen, "STAND", 250, 525, 120, 50)
+            stand_button = draw_button(screen, "STAND", 240, 525, 120, 50)
             dd_button = draw_button(screen, "DOUBLE", 400, 525, 140, 50)
         if betting_phase:
             plus_button = draw_button(screen, "+", 250, 250, 50, 50)
@@ -387,22 +392,39 @@ def main():
                                        400, 250, 140, 50)
         if game_over and not no_credits:
             play_again_btn = draw_button(screen, "Play again?",
-                                         550, 525, 200, 50)
+                                         570, 525, 200, 50)
             cash_out_btn = draw_button(screen, "Cash Out",
-                                       550, 460, 200, 50)
+                                       570, 460, 200, 50)
 
         # Draw scores
         player_score = calculate_hand(player_hand)
         player_text = font.render(f"PLAYER: {player_score}", True, 
                                   (255, 255, 255))
+        player_box = pygame.Rect(80, 340, 200, 40)
+        pygame.draw.rect(screen, (20, 20, 20), player_box,
+                 border_radius=10)
+        pygame.draw.rect(screen, (255, 255, 255), player_box, 2,
+                 border_radius=10)
+        screen.blit(player_text, (100, 350))
         
-        # Draw credits
+        # Draw credits and bet
         credits_text = font.render(f"CREDITS: {credits}", True,
                                    (255, 255, 255))
+        credits_box = pygame.Rect(580, 10, 180, 40)
+        pygame.draw.rect(screen, (20, 20, 20), credits_box,
+                 border_radius=10)
+        pygame.draw.rect(screen, (255, 255, 255), credits_box, 2,
+                 border_radius=10)
         screen.blit(credits_text, (600, 20))
+
         bet_text = font.render(f"BET: {bet}", True,
                                (255, 255, 255))
-        screen.blit(bet_text, (600, 60))
+        bet_box = pygame.Rect(580, 70, 180, 40)
+        pygame.draw.rect(screen, (20, 20, 20), bet_box,
+                 border_radius=10)
+        pygame.draw.rect(screen, (255, 255, 255), bet_box, 2,
+                 border_radius=10)
+        screen.blit(bet_text, (600, 80))
         
         if reveal_dealer:
             dealer_score = calculate_hand(dealer_hand)
@@ -418,10 +440,24 @@ def main():
                                           (255, 255, 255))
         
         screen.blit(player_text, (100, 350))
+        dealer_box = pygame.Rect(80, 40, 200, 40)
+        pygame.draw.rect(screen, (20, 20, 20), dealer_box,
+                 border_radius=10)
+        pygame.draw.rect(screen, (255, 255, 255), dealer_box, 2,
+                 border_radius=10)
         screen.blit(dealer_text, (100, 50))
 
         # Draw dealer reactions
-        screen.blit(dealer_images[dealer_reaction], (575, 1))
+        dealer_reaction_box = pygame.Rect(560, 140, 220, 245)
+        pygame.draw.rect(screen, (20, 20, 20),
+                 dealer_reaction_box,
+                 border_radius=15)
+        pygame.draw.rect(screen, (255, 255, 255),
+                 dealer_reaction_box, 3,
+                 border_radius=15)
+        screen.blit(dealer_images[dealer_reaction], (575, 80))
+        dealer_name = font.render("LUCKY", True, (255, 255, 255))
+        screen.blit(dealer_name, (575, 155))
 
         # Results if game over
         if game_over:
@@ -459,7 +495,7 @@ def main():
         # Game over message
         if no_credits:
             game_over_text = font.render("GAME OVER", True,
-                                         (255, 0, 0))
+                                         (0, 0, 0))
             screen.blit(game_over_text, (300, 250))
             if not results_timer_started:
                 results_start_time = pygame.time.get_ticks()
