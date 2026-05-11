@@ -129,7 +129,7 @@ def draw_hand(screen, hand, card_images, x, y, hide_card=False,
             img = card_images[(value, suit)]
             screen.blit(img, (x + i * 90, y))
 
-# Draws button on screen (for now)
+# Draws button on screen
 def draw_button(screen, text, x, y, width, height):
     font = pygame.font.SysFont(None, 36)
     rect = pygame.Rect(x, y, width, height)
@@ -141,6 +141,10 @@ def draw_button(screen, text, x, y, width, height):
     screen.blit(words, (x + 10, y + 10))
 
     return rect
+
+def play_music(filename):
+    pygame.mixer.music.load(filename)
+    pygame.mixer.music.play(-1)
     
 def main():
     pygame.init()
@@ -151,6 +155,10 @@ def main():
 
     clock = pygame.time.Clock()
     running = True
+
+    # Music
+    pygame.mixer.init()
+    play_music("assets/musicvl21/titlemusic.mp3")
     
     # Loading card and dealer images
     card_images, back_image = load_card_images()
@@ -212,6 +220,7 @@ def main():
                 if game_state == "title":
                     if start_button and start_button.collidepoint(mouse_pos):
                         game_state = "betting"
+                        play_music("assets/musicvl21/gameplaymusic.mp3")
 
                 elif betting_phase:
                     # Increase bet
@@ -296,6 +305,7 @@ def main():
                 
                 if game_over and not no_credits and cash_out_btn:
                     if cash_out_btn.collidepoint(mouse_pos):
+                        play_music("assets/musicvl21/titlemusic.mp3")
                         game_state = "results"
                         
         # Title screen
@@ -437,6 +447,7 @@ def main():
                 results_timer_started = True
             current_time = pygame.time.get_ticks()
             if current_time - results_start_time > results_delay:
+                play_music("assets/musicvl21/titlemusic.mp3")
                 game_state = "results"
 
         pygame.display.flip()
