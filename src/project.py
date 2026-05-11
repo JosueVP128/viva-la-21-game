@@ -156,12 +156,17 @@ def main():
     card_images, back_image = load_card_images()
     dealer_images = load_dealer_images()
 
+    # Loading title screen
+    title_screen = pygame.image.load("assets/vivala21_titlescreen.png")
+
     deck = make_deck()
 
     player_hand = []
     dealer_hand = []
 
     # Game state
+    game_state = "title"
+
     player_turn_active = True
     game_over = False
     reveal_dealer = False
@@ -199,7 +204,11 @@ def main():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
 
-                if betting_phase:
+                if game_state == "title":
+                    if start_button and start_button.collidepoint(mouse_pos):
+                        game_state = "betting"
+
+                elif betting_phase:
                     # Increase bet
                     if plus_button and plus_button.collidepoint(mouse_pos):
                         if bet + 50 <= credits:
@@ -278,6 +287,14 @@ def main():
                         no_credits = False
                         bet = 50
                         betting_phase = True
+        # Title screen
+        if game_state == "title":
+            screen.blit(title_screen, (0, 0))
+            start_button = draw_button(screen, "START", 320, 500,
+                                       160, 50)
+            pygame.display.flip()
+            clock.tick(60)
+            continue
         
         # Draw background
         screen.fill((0, 128, 0))
