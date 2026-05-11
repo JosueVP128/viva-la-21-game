@@ -179,6 +179,10 @@ def main():
     deal_delay = 500
     deal_queue = []
 
+    results_timer_started = False
+    results_start_time = 0
+    results_delay = 4000
+
     dealer_reaction = "neutral"
 
     play_again_btn = None
@@ -295,6 +299,19 @@ def main():
             pygame.display.flip()
             clock.tick(60)
             continue
+
+        # Results screen
+        if game_state == "results":
+            screen.blit(title_screen, (0, 0))
+            results_text = font.render(f"FINAL CREDITS: {credits}", 
+                                     True, (255, 255, 255))
+            screen.blit(results_text, (290, 430))
+            thanks_text = font.render("THANKS FOR PLAYING!", 
+                                     True, (255, 255, 255))
+            screen.blit(thanks_text, (260, 460))
+            pygame.display.flip()
+            clock.tick(60)
+            continue
         
         # Draw background
         screen.fill((0, 128, 0))
@@ -405,7 +422,13 @@ def main():
         if no_credits:
             game_over_text = font.render("GAME OVER", True,
                                          (255, 0, 0))
-            screen.blit(game_over_text, (200, 250))
+            screen.blit(game_over_text, (300, 250))
+            if not results_timer_started:
+                results_start_time = pygame.time.get_ticks()
+                results_timer_started = True
+            current_time = pygame.time.get_ticks()
+            if current_time - results_start_time > results_delay:
+                game_state = "results"
 
         pygame.display.flip()
         clock.tick(60)
